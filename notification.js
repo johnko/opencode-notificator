@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
-import { readFileSync } from 'fs'
+import { readFileSync, readdirSync } from 'fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -23,12 +23,52 @@ function loadConfig() {
   }
 }
 
+// Simple string hash function
+function hashString(str) {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32-bit integer
+  }
+  return Math.abs(hash)
+}
+
+function getSoundFiles() {
+  try {
+    const soundsDir = join(__dirname, 'sounds')
+    const files = readdirSync(soundsDir)
+      .filter(f => /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(f))
+      .sort()
+    return files.length > 0 ? files : ['ding1.mp3']
+  } catch {
+    return ['ding1.mp3']
+  }
+}
+
+function pickSoundFile(projectPath, seed) {
+  const soundFiles = getSoundFiles()
+  const input = `${projectPath}:${seed}`
+  const hash = hashString(input)
+  const index = hash % soundFiles.length
+  return soundFiles[index]
+}
+
 export const NotificationPlugin = async ({ project, client, $, directory, worktree }) => {
   const config = loadConfig()
   const enabled = config.enabled !== false
   const soundConfig = config.playSound || {}
   const soundEnabled = soundConfig.enabled !== false
-  const soundFile = soundConfig.file || 'ding1.mp3'
+  
+  // Determine sound file: explicit file takes priority, then fileSeed, then default
+  let soundFile
+  if (soundConfig.file) {
+    soundFile = soundConfig.file
+  } else if (soundConfig.fileSeed !== undefined) {
+    soundFile = pickSoundFile(worktree || directory, soundConfig.fileSeed)
+  } else {
+    soundFile = 'ding1.mp3'
+  }
 
   const playNotificationSound = async () => {
     if (!enabled || !soundEnabled) return

@@ -83,6 +83,26 @@ Edit `notification.jsonc` in your OpenCode plugins directory:
 }
 ```
 
+#### Auto-pick sound per project
+
+Instead of manually configuring a sound file, you can use `fileSeed` to automatically assign a consistent sound to each project based on its path:
+
+```jsonc
+{
+  "enabled": true,
+  "playSound": {
+    "enabled": true,
+    "fileSeed": 0
+  }
+}
+```
+
+The plugin hashes `projectPath + seed` to pick from available sounds in the `sounds/` directory. Each project gets its own consistent sound without manual configuration. Change the seed value to get a different sound assignment.
+
+#### Custom sounds
+
+Add your own sound files to the `sounds/` directory (supports `.mp3`, `.wav`, `.ogg`, `.m4a`, `.aac`, `.flac`). They'll automatically be included in the rotation when using `fileSeed`.
+
 To disable only sound notifications:
 ```jsonc
 {
