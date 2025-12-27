@@ -1,0 +1,17 @@
+{
+  "name": "opencode-desktop-notifications",
+  "version": "1.0.0",
+  "description": "OpenCode plugin for desktop notifications",
+  "main": "notification.js",
+  "keywords": [
+    "opencode",
+    "plugin",
+    "notifications",
+    "desktop"
+  ],
+  "author": "panta82",
+  "license": "MIT",
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.0.203"
+  }
+}
