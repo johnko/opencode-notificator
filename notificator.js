@@ -84,7 +84,7 @@ export const NotificationPlugin = async ({ project, client, $, directory, worktr
     
     try {
       if (platform === "darwin") {
-        await $`afplay ${soundPath}`.quiet()
+        await $`afplay "${soundPath}"`.quiet()
       } else if (platform === "linux") {
         // ffplay handles MP3 properly and is commonly available via ffmpeg
         await $`ffplay -nodisp -autoexit -loglevel quiet ${soundPath}`.quiet()
@@ -101,7 +101,9 @@ export const NotificationPlugin = async ({ project, client, $, directory, worktr
 
     try {
       if (platform === "darwin") {
-        await $`osascript -e 'display notification ${message} with title ${title}'`
+        const escapedMessage = message.replace(/'/g, "'\"'\"'")
+        const escapedTitle = title.replace(/'/g, "'\"'\"'")
+        await $`osascript -e 'display notification "${escapedMessage}" with title "${escapedTitle}"'`
       } else if (platform === "linux") {
         await $`notify-send ${title} ${message}`
       }
