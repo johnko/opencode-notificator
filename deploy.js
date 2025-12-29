@@ -70,6 +70,10 @@ function install() {
         console.log(`  Removing existing ${file}/`)
         rmSync(destPath, { recursive: true, force: true })
       } else {
+        if (file === 'notificator.jsonc') {
+          console.log(`  Preserving existing ${file}`)
+          continue
+        }
         console.log(`  Removing existing ${file}`)
         rmSync(destPath, { force: true })
       }
